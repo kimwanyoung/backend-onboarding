@@ -60,3 +60,5 @@
   "accessToken": "eKDIkdfjoakIdkfjpekdkcjdkoIOdjOKJDFOlLDKFJKL"
 }
 ```
+### 배포 주소
+ec2 퍼블릭 IPv4 DNS : ec2-54-180-245-156.ap-northeast-2.compute.amazonaws.com
