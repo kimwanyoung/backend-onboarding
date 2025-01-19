@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.backend_onboarding.security.filter.JwtAuthenticationFilter;
 import com.backend_onboarding.security.filter.LoginAuthenticationFilter;
 import com.backend_onboarding.utils.JwtUtil;
 
@@ -33,11 +34,9 @@ public class SecurityConfig {
 			.authorizeHttpRequests((auth) -> auth
 				.requestMatchers("/sign", "/signup").permitAll() // 회원가입, 로그인 경로 인증 제외
 				.anyRequest().authenticated())
-			.addFilterAt(new LoginAuthenticationFilter(
-					"/sign",
-					authenticationManager(authenticationConfiguration),
-					jwtUtil
-				),
+			.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), LoginAuthenticationFilter.class)
+			.addFilterAt(new LoginAuthenticationFilter("/sign",
+					authenticationManager(authenticationConfiguration), jwtUtil),
 				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // jwt 사용을 위해 세션 stateless 상태 설정
