@@ -1,5 +1,6 @@
 package com.backend_onboarding.domain.member.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend_onboarding.domain.member.dto.request.SignupRequest;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final BCryptPasswordEncoder encoder;
 
 	public SignupResponse signup(SignupRequest req) {
 		if (memberRepository.existsByUsername(req.getUsername())) {
@@ -23,7 +25,7 @@ public class MemberService {
 
 		Member member = Member.builder()
 			.username(req.getUsername())
-			.password(req.getPassword())
+			.password(encoder.encode(req.getPassword()))
 			.nickname(req.getNickname())
 			.role(MemberRole.ROLE_USER)
 			.build();
