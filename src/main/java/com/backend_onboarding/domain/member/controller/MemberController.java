@@ -13,15 +13,19 @@ import com.backend_onboarding.domain.member.dto.response.SignupResponse;
 import com.backend_onboarding.domain.member.service.MemberService;
 import com.backend_onboarding.utils.JwtUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Member Controller", description = "회원 관련 API")
 public class MemberController {
 
 	private final MemberService memberService;
 	private final JwtUtil jwtUtil;
 
+	@Operation(summary = "회원 가입", description = "새로운 회원 등록.")
 	@PostMapping("/signup")
 	public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest req) {
 		return ResponseEntity
@@ -29,6 +33,7 @@ public class MemberController {
 			.body(memberService.signup(req));
 	}
 
+	@Operation(summary = "accesstoken 갱신", description = "refreshtoken을 통해 새로운 accesstoken 재발급.")
 	@PostMapping("/refresh")
 	public ResponseEntity<RefreshAccessTokenResponse> reGenerateAccessToken(
 		@CookieValue(name = "refresh_token", required = false) String refreshToken) {
