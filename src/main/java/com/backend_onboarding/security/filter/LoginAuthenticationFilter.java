@@ -63,7 +63,14 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException failed) {
+		AuthenticationException failed) throws IOException {
+		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("UTF-8");
 
+		Map<String, String> responseBody = Map.of(
+			"message", "로그인에 실패하였습니다."
+		);
+		new ObjectMapper().writeValue(response.getWriter(), responseBody);
 	}
 }
