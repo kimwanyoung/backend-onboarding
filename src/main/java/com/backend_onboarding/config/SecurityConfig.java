@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.backend_onboarding.security.filter.LoginAuthenticationFilter;
+import com.backend_onboarding.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final AuthenticationConfiguration authenticationConfiguration;
+	private final JwtUtil jwtUtil;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,7 +33,11 @@ public class SecurityConfig {
 			.authorizeHttpRequests((auth) -> auth
 				.requestMatchers("/sign", "/signup").permitAll() // 회원가입, 로그인 경로 인증 제외
 				.anyRequest().authenticated())
-			.addFilterAt(new LoginAuthenticationFilter("/sign", authenticationManager(authenticationConfiguration)),
+			.addFilterAt(new LoginAuthenticationFilter(
+					"/sign",
+					authenticationManager(authenticationConfiguration),
+					jwtUtil
+				),
 				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // jwt 사용을 위해 세션 stateless 상태 설정
