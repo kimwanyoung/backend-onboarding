@@ -17,6 +17,7 @@ import com.backend_onboarding.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -55,6 +56,10 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 			.orElseThrow(() -> new IllegalArgumentException("권한이 존재하지 않습니다."));
 
 		String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
+		String refreshToken = jwtUtil.createJwt(username, role, 60 * 60 * 24 * 7L);
+
+		response.addCookie(createCookie("refresh_token", refreshToken, 60 * 60 * 24 * 7));
+		
 		Map<String, String> responseBody = Map.of("accesstoken", token);
 		response.setStatus(HttpStatus.OK.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -72,5 +77,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 			"message", "로그인에 실패하였습니다."
 		);
 		new ObjectMapper().writeValue(response.getWriter(), responseBody);
+	}
+
+	private Cookie createCookie(String name, String value, int maxAgeSeconds) {
+		Cookie refreshTokenCookie = new Cookie(name, value);
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setMaxAge(maxAgeSeconds);
+		return refreshTokenCookie;
 	}
 }
