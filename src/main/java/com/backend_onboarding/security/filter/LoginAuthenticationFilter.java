@@ -59,7 +59,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 		String refreshToken = jwtUtil.createJwt(username, role, 60 * 60 * 24 * 7L);
 
 		response.addCookie(createCookie("refresh_token", refreshToken, 60 * 60 * 24 * 7));
-		
+
 		Map<String, String> responseBody = Map.of("accesstoken", token);
 		response.setStatus(HttpStatus.OK.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);

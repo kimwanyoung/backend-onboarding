@@ -32,7 +32,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable) //From 로그인 방식 disable
 			.httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
 			.authorizeHttpRequests((auth) -> auth
-				.requestMatchers("/sign", "/signup").permitAll() // 회원가입, 로그인 경로 인증 제외
+				.requestMatchers("/sign", "/signup", "/refresh").permitAll() // 회원가입, 로그인, 토큰 재발급 경로 인증 제외
 				.anyRequest().authenticated())
 			.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), LoginAuthenticationFilter.class)
 			.addFilterAt(new LoginAuthenticationFilter("/sign",
