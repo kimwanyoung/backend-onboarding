@@ -1,4 +1,4 @@
-package com.backend_onboarding.security;
+package com.backend_onboarding.security.filter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
