@@ -33,6 +33,12 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
 			.authorizeHttpRequests((auth) -> auth
 				.requestMatchers("/sign", "/signup", "/refresh").permitAll() // 회원가입, 로그인, 토큰 재발급 경로 인증 제외
+				.requestMatchers(
+					"/v3/api-docs/**",
+					"/swagger-ui/**",
+					"/swagger-ui.html",
+					"/api-docs/**"
+				).permitAll() // swagger 관련 경로 인증 제외
 				.anyRequest().authenticated())
 			.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), LoginAuthenticationFilter.class)
 			.addFilterAt(new LoginAuthenticationFilter("/sign",
