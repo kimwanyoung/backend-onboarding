@@ -11,7 +11,6 @@ import com.backend_onboarding.domain.member.dto.request.SignupRequest;
 import com.backend_onboarding.domain.member.dto.response.RefreshAccessTokenResponse;
 import com.backend_onboarding.domain.member.dto.response.SignupResponse;
 import com.backend_onboarding.domain.member.service.MemberService;
-import com.backend_onboarding.utils.JwtUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
 	private final MemberService memberService;
-	private final JwtUtil jwtUtil;
 
 	@Operation(summary = "회원 가입", description = "새로운 회원 등록.")
 	@PostMapping("/signup")
@@ -37,14 +35,8 @@ public class MemberController {
 	@PostMapping("/refresh")
 	public ResponseEntity<RefreshAccessTokenResponse> reGenerateAccessToken(
 		@CookieValue(name = "refresh_token", required = false) String refreshToken) {
-		if (refreshToken == null || jwtUtil.isExpired(refreshToken)) {
-			throw new IllegalArgumentException("유효하지 않은 RefreshToken입니다.");
-		}
-
-		String username = jwtUtil.getUsername(refreshToken);
-		String role = jwtUtil.getRole(refreshToken);
-
-		String generatedAccessToken = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
-		return ResponseEntity.ok(new RefreshAccessTokenResponse(generatedAccessToken));
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(memberService.refreshAccessToken(refreshToken));
 	}
 }

@@ -58,4 +58,14 @@ public class JwtUtil {
 			.signWith(secretKey)
 			.compact();
 	}
+
+	public String refreshAccessToken(String refreshToken) {
+		if (refreshToken == null || this.isExpired(refreshToken)) {
+			throw new IllegalArgumentException("유효하지 않은 RefreshToken입니다.");
+		}
+		String username = this.getUsername(refreshToken);
+		String role = this.getRole(refreshToken);
+
+		return this.createJwt(username, role, 60 * 60 * 10L);
+	}
 }

@@ -4,10 +4,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend_onboarding.domain.member.dto.request.SignupRequest;
+import com.backend_onboarding.domain.member.dto.response.RefreshAccessTokenResponse;
 import com.backend_onboarding.domain.member.dto.response.SignupResponse;
 import com.backend_onboarding.domain.member.entity.Member;
 import com.backend_onboarding.domain.member.entity.MemberRole;
 import com.backend_onboarding.domain.member.repository.MemberRepository;
+import com.backend_onboarding.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final JwtUtil jwtUtil;
 	private final BCryptPasswordEncoder encoder;
 
 	public SignupResponse signup(SignupRequest req) {
@@ -31,5 +34,9 @@ public class MemberService {
 			.build();
 		Member savedMember = memberRepository.save(member);
 		return SignupResponse.of(savedMember);
+	}
+
+	public RefreshAccessTokenResponse refreshAccessToken(String refreshToken) {
+		return new RefreshAccessTokenResponse(jwtUtil.refreshAccessToken(refreshToken));
 	}
 }
