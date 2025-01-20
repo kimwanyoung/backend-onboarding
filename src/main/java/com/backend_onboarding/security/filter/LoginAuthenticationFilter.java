@@ -55,8 +55,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 			.map(GrantedAuthority::getAuthority)
 			.orElseThrow(() -> new IllegalArgumentException("권한이 존재하지 않습니다."));
 
-		String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
-		String refreshToken = jwtUtil.createJwt(username, role, 60 * 60 * 24 * 7L);
+		String token = jwtUtil.generateAccessToken(username, role);
+		String refreshToken = jwtUtil.generateRefreshToken(username, role);
 
 		response.addCookie(createCookie("refresh_token", refreshToken, 60 * 60 * 24 * 7));
 

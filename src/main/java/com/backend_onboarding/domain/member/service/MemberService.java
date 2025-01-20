@@ -4,7 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend_onboarding.domain.member.dto.request.SignupRequest;
-import com.backend_onboarding.domain.member.dto.response.RefreshAccessTokenResponse;
+import com.backend_onboarding.domain.member.dto.response.NewTokensResponse;
 import com.backend_onboarding.domain.member.dto.response.SignupResponse;
 import com.backend_onboarding.domain.member.entity.Member;
 import com.backend_onboarding.domain.member.entity.MemberRole;
@@ -36,7 +36,7 @@ public class MemberService {
 		return SignupResponse.of(savedMember);
 	}
 
-	public RefreshAccessTokenResponse refreshAccessToken(String refreshToken) {
-		return new RefreshAccessTokenResponse(jwtUtil.refreshAccessToken(refreshToken));
+	public NewTokensResponse refreshAccessToken(String refreshToken) {
+		return jwtUtil.refreshAccessToken(refreshToken);
 	}
 }

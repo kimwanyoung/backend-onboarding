@@ -9,12 +9,16 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.backend_onboarding.domain.member.dto.response.NewTokensResponse;
+
 import io.jsonwebtoken.Jwts;
 
 @Component
 public class JwtUtil {
 
 	private SecretKey secretKey;
+	private static final Long ACCESS_TOKEN_EXPIRED_MS = 60 * 60 * 1000L; // 10 시간
+	private static final Long REFRESH_TOKEN_EXPIRED_MS = 60 * 60 * 24 * 7 * 1000L; // 7일
 
 	public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
 		secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
@@ -49,23 +53,36 @@ public class JwtUtil {
 			.before(new Date());
 	}
 
-	public String createJwt(String username, String role, Long expiredMs) {
+	public String generateAccessToken(String username, String role) {
 		return Jwts.builder()
 			.claim("username", username)
 			.claim("role", role)
 			.issuedAt(new Date(System.currentTimeMillis()))
-			.expiration(new Date(System.currentTimeMillis() + expiredMs))
+			.expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRED_MS))
 			.signWith(secretKey)
 			.compact();
 	}
 
-	public String refreshAccessToken(String refreshToken) {
+	public String generateRefreshToken(String username, String role) {
+		return Jwts.builder()
+			.claim("username", username)
+			.claim("role", role)
+			.issuedAt(new Date(System.currentTimeMillis()))
+			.expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRED_MS))
+			.signWith(secretKey)
+			.compact();
+	}
+
+	public NewTokensResponse refreshAccessToken(String refreshToken) {
 		if (refreshToken == null || this.isExpired(refreshToken)) {
 			throw new IllegalArgumentException("유효하지 않은 RefreshToken입니다.");
 		}
 		String username = this.getUsername(refreshToken);
 		String role = this.getRole(refreshToken);
 
-		return this.createJwt(username, role, 60 * 60 * 10L);
+		return NewTokensResponse.builder()
+			.accessToken(this.generateAccessToken(username, role))
+			.refreshToken(this.generateRefreshToken(username, role))
+			.build();
 	}
 }
